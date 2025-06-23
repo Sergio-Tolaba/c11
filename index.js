@@ -1,5 +1,5 @@
 import express from 'express'
-
+import cors from 'cors'
 const app = express() 
 //Array de productos como objetos literales
 const products = [
@@ -22,8 +22,11 @@ const products = [
     "cantidad": 3
   }
 ]
+//Middleware
+app.use(express.json())
+app.use(cors())//Si mi api no usa navegadores, no hace falta ponerlo ya que cors aparece en los navegadores
 
-
+//Rutas
 app.get('/',(req,res)=>{
     //res.send("API Rest con Node.js ") - No es para humanos sino para otras aplicaciones, usa JSON
     res.json({"menssage": "API Rest con Node.js "})
@@ -64,6 +67,19 @@ app.get('/products/:id', (req, res)=>{//:category/:slug=>escribir el nombre en u
   res.json(product)
 })
 
+app.post('/products', (req,res)=>{ 
+  //console.log(req.body) // Voy a postman, envio Produto 1 pero no llega: undefined. Necesito middleware
+  //Luego si tengo esto en consola: { name: 'Producto 1', price: 123 }
+  //res.send("POST")//Veo en Postan con status 200 OK
+  const {nombre, precio} = req.body
+  const newProduct = {
+    id: products.length + 1,
+    nombre,
+    precio
+  }
+  products.push(newProduct)
+  res.status(200).json(newProduct) // Postman: lo muestra en post y en get lo agrega al final
+})
 
 const PORT = 3000
 
